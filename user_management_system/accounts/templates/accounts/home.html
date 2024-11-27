@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #5680E9, #84CEEB, #5AB9EA, #C1C8E4); /* Gradient background for body */
+            font-family: 'Roboto', sans-serif; /* Use Roboto font */
+            margin: 0; /* Remove default margin */
+            height: 100vh; /* Full viewport height */
+            overflow: hidden; /* Prevent scrollbar */
+        }
+
+        .header-box {
+            background: linear-gradient(to bottom, #5680E9, #8860D0); /* Gradient background for header box */
+            padding: 20px; /* Padding for header box */
+            color: white; /* White text color for better contrast */
+            text-align: center; /* Center align heading in sidebar */
+            width: 100%; /* Make it full width of the sidebar */
+        }
+
+        .sidebar {
+            min-height: 100vh; /* Full height without adjustment */
+            background: linear-gradient(to bottom,
+                rgba(255,255,255,.8),
+                rgba(211,211,211,.5),
+                rgba(169,169,169,.5)); /* Semi-transparent white background */
+            backdrop-filter: blur(10px); /* Blur effect for glassmorphism */
+            border-right: 2px solid #000; /* Light grey border with transparency */
+            width: 20%; /* One fifth of the screen */
+            border-radius: 0 8px 8px 0; /* Rounded right corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        .sidebar a {
+            color: #333; /* Dark text color */
+            text-decoration: none; /* No underline */
+            padding: 15px 20px; /* Padding for buttons */
+            display: block; /* Make link fill the button area */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(211, 211, 211, 0.5); /* Transparent light grey on hover */
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .welcard {
+            margin-top: 20px;
+            border: none; /* Light grey border for welcome card */
+            background-color: transparent; /* Make welcome card transparent to show gradient */
+        }
+
+        .card {
+            margin-top: 20px;
+            border: 1px solid #000; /* Light grey border for user and role list cards */
+            background-color: #ffffff; /* White background for user and role list cards */
+        }
+
+        .card-header {
+            background-color: #ffffff; /* White header for cards to match theme */
+            color: #333;
+            border-bottom: 2px solid #000;
+        }
+
+        .card-body {
+            padding: 10px; /* Reduced padding for fitting content inside card */
+        }
+        
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .profile-dropdown {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <nav class="sidebar flex-shrink-0">
+        <div class="header-box"> <!-- Header box with gradient -->
+            <h1>User Management System</h1> <!-- Header text with gradient -->
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_list' %}">Manage Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_user' %}">Add Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'role_list' %}">Manage Roles</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_role' %}">Add Role</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div class="header-box">
+           <!-- Profile Dropdown -->
+           <div class="profile-dropdown">
+               <div class="dropdown">
+                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                       {{ user.username }} <!-- Display username -->
+                   </button>
+                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                       {% if user.email %}
+                           <li><a class="dropdown-item" href="#">{{ user.email }}</a></li> <!-- Display email if available -->
+                       {% endif %}
+                       <li><hr class="dropdown-divider"></li>
+                   </ul>
+               </div>
+           </div>
+       </div>
+
+       <!-- Welcome Card -->
+       <div class="welcard welcome-card">
+           <div class="card-body">
+               <h2>Welcome to the User Management System</h2>
+               <p>Select an option from the sidebar to get started.</p>
+           </div>
+       </div>
+
+       <!-- Two Boxes for User List and Role List -->
+       <div class="row mt-4">
+           <!-- User List Box -->
+           <div class="col-md-6">
+               <div class="card">
+                   <div class="card-header"> User List </div>
+                   <div class="card-body">
+                       <!-- User List Content -->
+                       <ul class="list-group">
+                           {% for user in users %}
+                               <li class="list-group-item d-flex justify-content-between align-items-center">
+                                   {{ user.username }}
+                                   <div>
+                                       <a href="{% url 'edit_user' user.id %}" class="btn btn-link">Edit</a>
+                                       <a href="{% url 'delete_user' user.id %}" class="btn btn-link text-danger">Delete</a>
+                                   </div>
+                               </li>
+                           {% empty %}
+                               <li class="list-group-item">No users found.</li> <!-- Message when no users exist -->
+                           {% endfor %}
+                       </ul>
+                   </div>
+               </div>
+           </div>
+
+           <!-- Role List Box -->
+           <div class="col-md-6">
+               <div class="card">
+                   <div class="card-header"> Role List </div>
+                   <div class="card-body">
+                       <!-- Role List Content -->
+                       <ul class="list-group">
+                           {% for role in roles %}
+                               <li class="list-group-item d-flex justify-content-between align-items-center">
+                                   {{ role.name }}
+                                   <div>
+                                       <a href="{% url 'edit_role' role.id %}" class="btn btn-link">Edit</a>
+                                       <a href="{% url 'delete_role' role.id %}" class="btn btn-link text-danger">Delete</a>
+                                   </div>
+                               </li>
+                           {% empty %}
+                               <li class="list-group-item">No roles found.</li> <!-- Message when no roles exist -->
+                           {% endfor %}
+                       </ul>
+                   </div>
+               </div>
+           </div>
+       </div> <!-- End of row -->
+   </div> <!-- End of content -->
+</div> <!-- End of d-flex -->
+
+<!-- Bootstrap JS (optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
